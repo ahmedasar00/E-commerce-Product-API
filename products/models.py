@@ -3,6 +3,7 @@ from categories.models import Category
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 
+
 class Product(models.Model):
     """
     Represents a product in the e-commerce application.
@@ -22,6 +23,7 @@ class Product(models.Model):
         is_available (BooleanField): True if the product is in stock.
         image (ImageField): An optional image for the product.
     """
+
     name = models.CharField(max_length=100)
     price = models.DecimalField(
         max_digits=10, decimal_places=2, default=0.00, validators=[MinValueValidator(0)]
@@ -37,7 +39,10 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_available = models.BooleanField(default=True)
     image = models.ImageField(
-        upload_to='products', null=True, blank=True, help_text="Upload an image for the product"
+        upload_to="products",
+        null=True,
+        blank=True,
+        help_text="Upload an image for the product",
     )
 
     class Meta:
@@ -47,8 +52,9 @@ class Product(models.Model):
         - db_table: Sets a custom table name in the database.
         - ordering: Sets the default sort order for products to be by name.
         """
-        db_table = 'Products'
-        ordering = ['name']
+
+        db_table = "Products"
+        ordering = ["name"]
 
     def __str__(self):
         """
