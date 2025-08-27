@@ -66,7 +66,7 @@ The project is organized into modular Django apps for better separation of conce
 
 The database is designed to support the complex relationships in an e-commerce platform. The key entities include Users, Products, Categories, Orders, OrderItems, and Reviews.
 
-![Entity Relationship Diagram](./docs/U_ERD/ERD.png)
+![Entity Relationship Diagram](./docs/ERD/U_ERD.png)
 
 ---
 
