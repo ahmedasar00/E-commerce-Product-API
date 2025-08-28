@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ user.username }}'s Profile</title>
+  </head>
+  <body>
+    <h1>Welcome, {{ user.name|default:user.username }}!</h1>
+
+    <h2>Your Profile Information:</h2>
+    <ul>
+      <li><strong>Username:</strong> {{ user.username }}</li>
+      <li><strong>Email:</strong> {{ user.email }}</li>
+      <li><strong>Full Name:</strong> {{ user.name }}</li>
+      <li>
+        <strong>Phone Number:</strong> {{ user.phone|default:"Not provided" }}
+      </li>
+      <li><strong>Role:</strong> {{ user.role }}</li>
+    </ul>
+
+    <hr />
+
+    <a href="{% url 'logout' %}">Logout</a>
+  </body>
+</html>
