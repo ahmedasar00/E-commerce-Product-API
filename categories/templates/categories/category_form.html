@@ -1,0 +1,77 @@
+{% block page_title %} {% if form.instance.pk %} Edit Category:
+<span class="text-primary">{{ form.instance.name }}</span>
+{% else %}
+<h2>Create a New Category</h2>
+{% endif %} {% endblock page_title %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %} {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+            <p class="mb-0">{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label"
+              >{{ form.name.label }}</label
+            >
+            {{ form.name }} {% if form.name.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.name.errors.as_text }}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label"
+              >{{ form.description.label }}</label
+            >
+            {{ form.description }} {% if form.description.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.description.errors.as_text }}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label for="{{ form.image.id_for_label }}" class="form-label"
+              >{{ form.image.label }}</label
+            >
+            {{ form.image }} {% if form.image.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.image.errors.as_text }}
+            </div>
+            {% endif %} {% if form.instance.image %}
+            <div class="mt-2">
+              <small
+                >Current Image:
+                <a href="{{ form.instance.image.url }}" target="_blank"
+                  >{{ form.instance.image.name }}</a
+                ></small
+              >
+            </div>
+            {% endif %}
+          </div>
+
+          <hr />
+
+          <div class="d-flex justify-content-end">
+            <a href="{% url 'category-list' %}" class="btn btn-secondary me-2">
+              <i class="fas fa-times me-1"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+              {% if form.instance.pk %}
+              <i class="fas fa-save me-1"></i> Save Changes {% else %}
+              <i class="fas fa-plus me-1"></i> Create Category {% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
