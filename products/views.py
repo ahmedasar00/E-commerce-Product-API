@@ -16,9 +16,6 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 
 
-# ===============================================
-# API VIEWS (باستخدام ViewSet) - هذا الكود موجود لديك بالفعل
-# ===============================================
 class ProductViewSet(viewsets.ModelViewSet):
     """
     API endpoint for products.
@@ -27,11 +24,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by("-created_at")
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
-# =======================================================
-# TEMPLATE VIEWS (باستخدام Class-Based Views) - أضف هذا الجزء
-# =======================================================
 
 
 class ProductListView(ListView):
