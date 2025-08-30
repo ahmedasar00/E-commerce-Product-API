@@ -34,6 +34,7 @@ urlpatterns = [
         category_views.CategoryDeleteView.as_view(),
         name="category-delete",
     ),
+    path("products/", include("products.urls")),
 ]
 
 if settings.DEBUG:

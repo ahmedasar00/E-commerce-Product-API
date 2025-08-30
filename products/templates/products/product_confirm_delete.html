@@ -1,0 +1,29 @@
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card text-center shadow-sm">
+      <div class="card-header bg-danger text-white">
+        <h3 class="h4 mb-0">Confirm Deletion</h3>
+      </div>
+      <div class="card-body">
+        <p class="lead">
+          Are you sure you want to delete the product "<strong
+            >{{ product.name }}</strong
+          >"?
+        </p>
+        <p class="text-danger">This action cannot be undone.</p>
+        <form method="post">
+          {% csrf_token %}
+          <a
+            href="{% url 'product-detail' product.pk %}"
+            class="btn btn-secondary"
+          >
+            <i class="fas fa-times me-2"></i>Cancel
+          </a>
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash-alt me-2"></i>Yes, Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
