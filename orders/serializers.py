@@ -51,3 +51,34 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "items",
         )
+
+
+class OrderItemCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating an order item.
+    Expects product_id and quantity from the client.
+    """
+
+    product_id = serializers.IntegerField()
+
+    class Meta:
+        model = OrderItem
+        fields = ("product_id", "quantity")
+
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating a new order.
+    Handles nested creation of order items.
+    """
+
+    items = OrderItemCreateSerializer(many=True)
+    address_id = serializers.IntegerField(
+        write_only=True
+    )  # Expects the ID of an existing address
+
+    class Meta:
+        model = Order
+        fields = ("address_id", "items")
+        # We don't include user, total_amount, or status
+        # because they will be set automatically in the view.

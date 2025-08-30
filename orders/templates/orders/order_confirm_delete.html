@@ -1,0 +1,17 @@
+{% extends "orders/base.html" %} {% block title %}Confirm Deletion{% endblock %}
+{% block content %}
+<h1 class="mb-4">Delete Order #{{ order.id }}</h1>
+
+<div class="alert alert-danger" role="alert">
+  <strong>Warning:</strong> Are you sure you want to permanently delete this
+  order? This is not recommended and cannot be undone.
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Yes, Delete</button>
+  <a href="{% url 'order_detail' order.pk %}" class="btn btn-secondary"
+    >Cancel</a
+  >
+</form>
+{% endblock %}

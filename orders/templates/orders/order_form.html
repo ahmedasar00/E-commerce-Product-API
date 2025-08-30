@@ -1,0 +1,18 @@
+{% extends "orders/base.html" %} {% block title %}{{ form_title }}{% endblock %}
+{% block content %}
+<h1 class="mb-4">{{ form_title }}</h1>
+<p class="text-muted">
+  Note: This is a simplified example. Orders should normally be created via a
+  shopping cart.
+</p>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit" class="btn btn-primary mt-3">Save</button>
+      <a href="{% url 'order_list' %}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

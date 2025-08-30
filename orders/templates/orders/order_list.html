@@ -1,0 +1,39 @@
+{% block title %}My Orders{% endblock %}
+<h1 class="mb-4">My Orders</h1>
+
+{% if orders %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th scope="col">Order #</th>
+        <th scope="col">Date</th>
+        <th scope="col">Status</th>
+        <th scope="col">Total Amount</th>
+        <th scope="col">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <th scope="row">{{ order.id }}</th>
+        <td>{{ order.created_at|date:"d M, Y" }}</td>
+        <td><span class="badge bg-primary">{{ order.status }}</span></td>
+        <td>${{ order.total_amount|floatformat:2 }}</td>
+        <td>
+          <a
+            href="{% url 'order_detail' order.pk %}"
+            class="btn btn-sm btn-outline-dark"
+            >View Details</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="alert alert-info" role="alert">
+  You have not placed any orders yet.
+</div>
+{% endif %}
