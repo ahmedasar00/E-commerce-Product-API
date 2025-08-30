@@ -8,7 +8,21 @@ default behavior to create a more intuitive and powerful admin experience.
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Users, Address
+from django.contrib.admin import StackedInline
+from .models import Users, Address, TokenProxy
+from rest_framework.authtoken.models import Token
+
+
+@admin.register(TokenProxy)
+class TokenProxyAdmin(admin.ModelAdmin):
+    list_display = ("key", "user", "created")
+    search_fields = ("user__username",)
+
+
+class TokenInline(StackedInline):
+    model = Token
+    can_delete = False
+    verbose_name_plural = "Auth Token"
 
 
 @admin.register(Users)
@@ -41,6 +55,7 @@ class CustomUserAdmin(UserAdmin):
 
     # Add a search bar to search for users by these fields.
     search_fields = ("username", "name", "email")
+    inlines = [TokenInline]
 
 
 @admin.register(Address)
@@ -61,3 +76,7 @@ class AddressAdmin(admin.ModelAdmin):
     # Add a search bar to search for addresses.
     # The '__' syntax allows searching through related models.
     search_fields = ("user__username", "street", "city", "postal_code")
+
+
+if admin.site.is_registered(Token):
+    admin.site.unregister(Token)
