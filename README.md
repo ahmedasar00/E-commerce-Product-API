@@ -1,4 +1,4 @@
-# Django Multi-Vendor E-commerce API
+# Django E-commerce API
 
 ## 📖 Table of Contents
 
@@ -24,11 +24,11 @@ The architecture is designed to be scalable, secure, and maintainable, following
 
 ## ✨ Core Features
 
-- **User Management & Authentication:** Secure user registration and login using JWT (JSON Web Tokens).
+- **User Management & Authentication:** Secure user registration and login.
 - **Multi-Vendor System:** Users can register as sellers and manage their own product listings.
 - **Product Management:** Complete CRUD operations for products, including image uploads.
 - **Admin Approval System:** Products submitted by sellers must be approved by an admin before they become visible to buyers.
-- **Category & Filtering:** Products are organized by categories, with advanced filtering options (by category, price range, availability).
+- **Category & Filtering:** Products are organized by categories, with advanced filtering options.
 - **Shopping Cart:** Persistent shopping cart for each authenticated user.
 - **Order Management:** A complete system for placing and tracking orders.
 - **Reviews & Ratings:** Users can leave reviews and ratings for products they have purchased.
@@ -42,8 +42,8 @@ The architecture is designed to be scalable, secure, and maintainable, following
 - **Backend:** Python 3.12
 - **Framework:** Django
 - **API:** Django REST Framework (DRF)
-- **Authentication:** Simple JWT (JSON Web Token) for stateless authentication.
-- **Database:** PostgreSQL / SQLite 3 (Configurable)
+- **Authentication:** DRF Token Authentication (built-in).
+- **Database:** PostgreSQL / MySQL / SQLite 3 (Configurable)
 
 ---
 
@@ -52,11 +52,11 @@ The architecture is designed to be scalable, secure, and maintainable, following
 The project is organized into modular Django apps for better separation of concerns:
 
 - `ecommerce_api/`: Main project configuration directory.
-- `users/`: Handles user registration, authentication, and profiles.
+- `users/`: Handles user registration, authentication, and profiles (template-based).
 - `products/`: Manages product details, listings, and seller associations.
 - `categories/`: Manages product categories.
 - `orders/`: Handles order creation, status tracking, and order items.
-- `payments/`: (Future implementation) Will handle payment processing integrations.
+- `payments/`: Handles payment processing integrations.
 - `reviews/`: Manages user reviews and ratings for products.
 - `media/`: Stores user-uploaded files like product images.
 
@@ -72,40 +72,28 @@ The database is designed to support the complex relationships in an e-commerce p
 
 ## 🚀 API Endpoints
 
-Here is a summary of the available API endpoints. All endpoints are prefixed with `/api/`.
+Here is a summary of the available API endpoints based on the current project structure.
 
-| Method             | Endpoint                          | Description                                 | Auth Required |
-| :----------------- | :-------------------------------- | :------------------------------------------ | :------------ |
-| **Authentication** |                                   |                                             |               |
-| `POST`             | `/users/register/`                | Register a new user.                        | No            |
-| `POST`             | `/users/login/`                   | Obtain JWT access and refresh tokens.       | No            |
-| `POST`             | `/users/token/refresh/`           | Refresh an expired access token.            | No            |
-| **Users**          |                                   |                                             |               |
-| `GET`              | `/users/profile/`                 | Get the authenticated user's profile.       | Yes           |
-| `PUT`              | `/users/profile/`                 | Update the authenticated user's profile.    | Yes           |
-| **Products**       |                                   |                                             |               |
-| `GET`              | `/products/`                      | Get a list of all approved products.        | No            |
-| `GET`              | `/products/{id}/`                 | Get details of a specific product.          | No            |
-| `POST`             | `/products/`                      | Create a new product (as a seller).         | Yes (Seller)  |
-| `PUT`              | `/products/{id}/`                 | Update a product owned by the seller.       | Yes (Seller)  |
-| `DELETE`           | `/products/{id}/`                 | Delete a product owned by the seller.       | Yes (Seller)  |
-| **Admin**          |                                   |                                             |               |
-| `GET`              | `/products/pending/`              | Get all products pending approval.          | Yes (Admin)   |
-| `PATCH`            | `/products/{id}/approve/`         | Approve a pending product.                  | Yes (Admin)   |
-| **Categories**     |                                   |                                             |               |
-| `GET`              | `/categories/`                    | Get a list of all categories.               | No            |
-| `POST`             | `/categories/`                    | Create a new category.                      | Yes (Admin)   |
-| **Cart**           |                                   |                                             |               |
-| `GET`              | `/cart/`                          | View the contents of the shopping cart.     | Yes           |
-| `POST`             | `/cart/add/`                      | Add a product to the cart.                  | Yes           |
-| `PUT`              | `/cart/update/{item_id}/`         | Update the quantity of an item in the cart. | Yes           |
-| `DELETE`           | `/cart/remove/{item_id}/`         | Remove an item from the cart.               | Yes           |
-| **Orders**         |                                   |                                             |               |
-| `GET`              | `/orders/`                        | Get a list of the user's past orders.       | Yes           |
-| `POST`             | `/orders/`                        | Create a new order from the cart.           | Yes           |
-| **Reviews**        |                                   |                                             |               |
-| `GET`              | `/products/{product_id}/reviews/` | Get reviews for a specific product.         | No            |
-| `POST`             | `/products/{product_id}/reviews/` | Add a review to a product.                  | Yes           |
+| Method         | Endpoint                   | Description                         | Auth Required |
+| :------------- | :------------------------- | :---------------------------------- | :------------ |
+| **Products**   |                            |                                     |               |
+| `GET`          | `/products/api/`           | Get a list of all products.         | No            |
+| `POST`         | `/products/api/`           | Create a new product.               | Yes (Seller)  |
+| `GET`          | `/products/api/{id}/`      | Get details of a specific product.  | No            |
+| `PUT`/`PATCH`  | `/products/api/{id}/`      | Update a product.                   | Yes (Seller)  |
+| `DELETE`       | `/products/api/{id}/`      | Delete a product.                   | Yes (Seller)  |
+| **Categories** |                            |                                     |               |
+| `GET`          | `/api/v1/categories/`      | Get a list of all categories.       | No            |
+| `POST`         | `/api/v1/categories/`      | Create a new category.              | Yes (Admin)   |
+| `GET`          | `/api/v1/categories/{id}/` | Get details of a specific category. | No            |
+| `PUT`/`PATCH`  | `/api/v1/categories/{id}/` | Update a category.                  | Yes (Admin)   |
+| `DELETE`       | `/api/v1/categories/{id}/` | Delete a category.                  | Yes (Admin)   |
+| **Orders**     |                            |                                     |               |
+| `GET`          | `/api/orders/`             | List all orders for the user.       | Yes           |
+| `POST`         | `/api/orders/`             | Create a new order.                 | Yes           |
+| `GET`          | `/api/orders/{id}/`        | Get details of a specific order.    | Yes           |
+
+_Note: The project also includes several template-based URLs for rendering HTML pages (e.g., `/register/`, `/login/`, `/products/`, `/categories/`, `/my-orders/`). The table above focuses exclusively on the RESTful API endpoints that handle JSON data._
 
 ---
 
@@ -147,13 +135,7 @@ Follow these instructions to get a copy of the project up and running on your lo
     ```
 
 4.  **Set up environment variables:**
-    Create a `.env` file in the root directory by copying the example file:
-
-    ```bash
-    cp .env.example .env
-    ```
-
-    Then, open the `.env` file and fill in your configuration details. See the [Environment Variables](#-environment-variables) section below.
+    Create a `.env` file in the root directory. It is recommended to copy from a `.env.example` file if one exists. See the [Environment Variables](#-environment-variables) section below for required keys.
 
 5.  **Apply database migrations:**
 
@@ -173,17 +155,17 @@ Follow these instructions to get a copy of the project up and running on your lo
 To run this project, you will need to add the following environment variables to your `.env` file:
 
 ```ini
-# .env.example
+# .env file
 
 # Django Settings
 SECRET_KEY='your-secret-key'
 DEBUG=True
 
-# Database Settings (Example for PostgreSQL)
-DB_ENGINE=django.db.backends.postgresql
+# Database Settings (Example for MySQL/PostgreSQL)
+DB_ENGINE=django.db.backends.mysql
 DB_NAME=your_db_name
 DB_USER=your_db_user
 DB_PASSWORD=your_db_password
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=3306
 ```
