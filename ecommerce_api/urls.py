@@ -7,10 +7,11 @@ from categories import views as category_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("reviews/", include("reviews.urls")),  # للـ web
-    path("api/v1/reviews/", include("reviews.api_urls")),  # للـ API
+    
+    path("reviews/", include("reviews.urls")),
+    # path("api/v1/reviews/", include("reviews.api_urls")),  # للـ API
     # Route all API requests starting with 'api/' to the api_urls.py file
-    path("api/", include("orders.api_urls")),
+    # path("api/", include("orders.api_urls")),
     # Route all other requests to the standard urls.py file
     path("", include("orders.urls")),
     path("", include("users.urls")),

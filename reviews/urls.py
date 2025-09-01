@@ -1,12 +1,25 @@
-from django.urls import path
-from .views import ReviewListView, ReviewDetailView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from . import views
 
-# This file is for the user-facing web pages, not the API.
-app_name = "reviews"
+# --- Django REST Framework API URLs ---
+
+# Create a router and register our viewset with it.
+router = DefaultRouter()
+router.register(r"reviews", views.ReviewViewSet, basename="review")
+
+# The API URLs are now determined automatically by the router.
+# - /api/reviews/ -> list all reviews (GET) or create a new one (POST)
+# - /api/reviews/{pk}/ -> retrieve (GET), update (PUT/PATCH), or delete (DELETE) a specific review
+
+# --- Django Template-Based URLs ---
 
 urlpatterns = [
-    # Example: /reviews/
-    path("", ReviewListView.as_view(), name="review-list"),
-    # Example: /reviews/5/
-    path("<int:pk>/", ReviewDetailView.as_view(), name="review-detail"),
+    # API URLs
+    path("api/", include(router.urls)),
+    # Template-based URLs
+    path("", views.ReviewListView.as_view(), name="review-list"),
+    path("new/", views.ReviewCreateView.as_view(), name="review-create"),
+    path("<int:pk>/edit/", views.ReviewUpdateView.as_view(), name="review-update"),
+    path("<int:pk>/delete/", views.ReviewDeleteView.as_view(), name="review-delete"),
 ]
