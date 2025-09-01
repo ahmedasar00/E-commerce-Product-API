@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review Details</title>
+    <!-- Using Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Using a nice font like Inter */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container mx-auto p-8 max-w-2xl">
+      <div class="bg-white rounded-lg shadow-xl p-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 border-b pb-4">
+          Review for Product: {{ review.product.name }}
+        </h1>
+
+        <div class="mb-6">
+          <p class="text-lg text-gray-600 mb-2">
+            <span class="font-semibold">By User:</span> {{ review.user.username
+            }}
+          </p>
+          <p class="text-lg text-gray-600">
+            <span class="font-semibold">Date Published:</span> {{
+            review.created_at|date:"F j, Y, P" }}
+          </p>
+        </div>
+
+        <div class="flex items-center mb-6">
+          <h2 class="text-xl font-semibold text-gray-800 mr-4">Rating:</h2>
+          <!-- Star Rating -->
+          <div class="text-yellow-400">
+            {% for i in "12345" %} {% if i|add:0 <= review.rating %}
+            <span class="text-3xl">★</span>
+            {% else %}
+            <span class="text-3xl text-gray-300">☆</span>
+            {% endif %} {% endfor %}
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-2">Comment:</h2>
+          {% if review.comment %}
+          <div class="text-gray-700 bg-gray-50 p-4 rounded-lg shadow-inner">
+            <p class="text-lg leading-relaxed">"{{ review.comment }}"</p>
+          </div>
+          {% else %}
+          <div
+            class="text-gray-500 italic bg-gray-50 p-4 rounded-lg shadow-inner"
+          >
+            <p>(User left no comment)</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="mt-8 text-center border-t pt-6">
+          <a
+            href="{% url 'reviews:review-list' %}"
+            class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+          >
+            &larr; Back to All Reviews
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

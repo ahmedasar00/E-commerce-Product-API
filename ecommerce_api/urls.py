@@ -13,6 +13,14 @@ urlpatterns = [
     path("", include("orders.urls")),
     path("", include("users.urls")),
     path("payments/", include("payments.urls")),
+    # Include the API urls. All URLs here will be prefixed with 'api/'.
+    # Example: /api/reviews/
+    path("api/", include("reviews.api_urls")),
+    # Include the web page urls. All URLs here will be prefixed with 'reviews/'.
+    # Example: /reviews/
+    path("reviews/", include("reviews.web_urls")),
+    # You might want to include DRF's built-in login views for browsable API
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/v1/categories/", include("categories.urls")),
     path(
         "categories/", category_views.CategoryListView.as_view(), name="category-list"

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Reviews</title>
+    <!-- Using Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Using a nice font like Inter */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+      <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">
+        Reviews List
+      </h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Loop through reviews passed from the view -->
+        {% for review in reviews %}
+        <div
+          class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow duration-300"
+        >
+          <div class="flex items-center mb-4">
+            <!-- Star Rating -->
+            <div class="text-yellow-400">
+              {% for i in "12345" %} {% if i|add:0 <= review.rating %}
+              <span class="text-2xl">★</span>
+              {% else %}
+              <span class="text-2xl text-gray-300">☆</span>
+              {% endif %} {% endfor %}
+            </div>
+            <p class="ml-4 text-gray-600">({{ review.rating }} Stars)</p>
+          </div>
+
+          <h2 class="text-xl font-bold text-gray-800 mb-2">
+            Product: {{ review.product.name }}
+          </h2>
+
+          <p class="text-gray-700 mb-4">
+            By: <span class="font-semibold">{{ review.user.username }}</span>
+          </p>
+
+          {% if review.comment %}
+          <p class="text-gray-600 bg-gray-50 p-3 rounded-md mb-4">
+            "{{ review.comment }}"
+          </p>
+          {% else %}
+          <p class="text-gray-500 italic bg-gray-50 p-3 rounded-md mb-4">
+            (No comment provided)
+          </p>
+          {% endif %}
+
+          <div class="flex justify-between items-center mt-4 border-t pt-4">
+            <span class="text-sm text-gray-500">
+              {{ review.created_at|date:"d M, Y" }}
+            </span>
+            <a
+              href="{% url 'reviews:review-detail' review.pk %}"
+              class="text-blue-500 hover:underline font-semibold"
+            >
+              View Details &rarr;
+            </a>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-gray-500 col-span-full">
+          No reviews to display at the moment.
+        </p>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>
