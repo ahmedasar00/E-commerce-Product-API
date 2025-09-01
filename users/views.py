@@ -3,70 +3,33 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json  # 👈 Import the json library
 
 
-@csrf_exempt
 def register_view(request):
     if request.method == "POST":
-        # Check if the request body is JSON
-        if request.content_type == "application/json":
-            try:
-                data = json.loads(request.body)
-            except json.JSONDecodeError:
-                return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-            # Pass the parsed JSON data to the form
-            form = CustomUserCreationForm(data)
-        else:
-            # Handle standard form data
-            form = CustomUserCreationForm(request.POST)
-
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # login(request, user) # You might not need to log in the user for an API call
-            return JsonResponse(
-                {"message": "User registered successfully!"}, status=201
-            )
-        else:
-            return JsonResponse({"errors": form.errors}, status=400)
-
-    # ... rest of your view for GET requests
+            login(request, user)
+            return redirect("profile")
+    else:
+        form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
 
 
-# Add the decorator to disable CSRF protection
-@csrf_exempt
 def login_view(request):
-    """
-    Handles user login. Returns a JSON response for API requests.
-    """
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                # Return a success message in JSON format for the API client
-                return JsonResponse(
-                    {"message": "Login successful!", "username": user.username}
-                )
-            else:
-                # Handle invalid credentials
-                return JsonResponse(
-                    {"message": "Invalid username or password."}, status=401
-                )
-        else:
-            # Return form errors in JSON format
-            return JsonResponse({"errors": form.errors}, status=400)
+                return redirect("profile")
     else:
-        # For a GET request, render the HTML form
         form = AuthenticationForm()
-        return render(request, "users/login.html", {"form": form})
+    return render(request, "users/login.html", {"form": form})
 
 
 @login_required
