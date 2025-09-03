@@ -1,9 +1,7 @@
-# products/views.py
-
 from rest_framework import viewsets, permissions
 from .models import Product
 from .serializers import ProductSerializer
-from .forms import ProductForm  # <-- استيراد الفورم الجديد
+from .forms import ProductForm
 
 # --- Django Generic Views for Templates ---
 from django.views.generic import (
@@ -19,24 +17,30 @@ from django.urls import reverse_lazy
 class ProductViewSet(viewsets.ModelViewSet):
     """
     API endpoint for products.
+    Provides CRUD operations via REST API.
     """
 
-    queryset = Product.objects.all().order_by("-created_at")
+    queryset = Product.objects.all().order_by("-created_at")  # Latest products first
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # Authenticated users can create/update, others can only read
 
 
 class ProductListView(ListView):
-    """View to display a list of all products."""
+    """
+    Display a list of all products (HTML page).
+    """
 
     model = Product
     template_name = "products/product_list.html"
     context_object_name = "products"
-    paginate_by = 10  # Optional: for pagination
+    paginate_by = 10  # Show 10 products per page
 
 
 class ProductDetailView(DetailView):
-    """View to display the details of a single product."""
+    """
+    Display details of a single product.
+    """
 
     model = Product
     template_name = "products/product_detail.html"
@@ -44,23 +48,29 @@ class ProductDetailView(DetailView):
 
 
 class ProductCreateView(CreateView):
-    """View to handle the creation of a new product."""
+    """
+    Handle the creation of a new product (form + save).
+    """
 
     model = Product
     form_class = ProductForm
     template_name = "products/product_form.html"
-    success_url = reverse_lazy(
-        "product-list"
-    )  # Redirect to the product list after creation
+    success_url = reverse_lazy("product-list")
+    # Redirect to product list after creation
 
     def get_context_data(self, **kwargs):
+        """
+        Add custom context data for the template (page title).
+        """
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Add New Product"
         return context
 
 
 class ProductUpdateView(UpdateView):
-    """View to handle editing an existing product."""
+    """
+    Handle editing an existing product.
+    """
 
     model = Product
     form_class = ProductForm
@@ -68,13 +78,18 @@ class ProductUpdateView(UpdateView):
     success_url = reverse_lazy("product-list")
 
     def get_context_data(self, **kwargs):
+        """
+        Add custom context data (page title with product name).
+        """
         context = super().get_context_data(**kwargs)
         context["page_title"] = f"Edit {self.object.name}"
         return context
 
 
 class ProductDeleteView(DeleteView):
-    """View to confirm and handle the deletion of a product."""
+    """
+    Confirm and handle the deletion of a product.
+    """
 
     model = Product
     template_name = "products/product_confirm_delete.html"

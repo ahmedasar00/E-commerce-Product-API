@@ -2,27 +2,28 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
 
-# ==================================================
-# API URLs (using DRF Router)
-# ==================================================
-# The router automatically generates RESTful API routes (GET, POST, PUT, DELETE)
-# for the ProductViewSet.
+"""
+API Router setup:
+This will automatically create API routes for ProductViewSet.
+"""
 api_router = DefaultRouter()
 api_router.register(r"", views.ProductViewSet, basename="product-api")
 
-# ==================================================
-# Template (Web Page) URLs
-# ==================================================
-# These URLs are for the user-facing web pages (using Django class-based views).
-# They render HTML templates for CRUD operations.
+
+"""
+Template-based routes:
+These routes return HTML pages for product management.
+"""
 template_urls = [
-    path("", views.ProductListView.as_view(), name="product-list"),  # Show all products
+    path(
+        "", views.ProductListView.as_view(), name="product_list"
+    ),  # Show a list of all products
     path(
         "new/", views.ProductCreateView.as_view(), name="product-create"
     ),  # Create a new product
     path(
         "<int:pk>/", views.ProductDetailView.as_view(), name="product-detail"
-    ),  # Show product details
+    ),  # Show details of a single product
     path(
         "<int:pk>/edit/", views.ProductUpdateView.as_view(), name="product-update"
     ),  # Edit a product
@@ -31,16 +32,13 @@ template_urls = [
     ),  # Delete a product
 ]
 
-# ==================================================
-# Main URL Patterns for the App
-# ==================================================
-# Here we combine both API and Template URLs.
-# This file will be included in the project's main urls.py (e.g., under /products/).
+
+"""
+Main URL configuration:
+- Template URLs for web pages
+- API URLs for JSON responses
+"""
 urlpatterns = [
-    # Web Pages (HTML templates)
-    # Examples: /products/, /products/new/, /products/1/
-    path("", include(template_urls)),
-    # API Endpoints (JSON responses)
-    # Examples: /products/api/, /products/api/1/
-    path("api/", include(api_router.urls)),
+    path("", include(template_urls)),  # Web pages (HTML templates)
+    path("api/", include(api_router.urls)),  # API endpoints (REST API)
 ]
