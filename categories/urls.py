@@ -1,7 +1,22 @@
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
 
-router = DefaultRouter()
-router.register(r"", views.CategoryViewSet, basename="category")
+api_router = DefaultRouter()
+api_router.register(r"", views.CategoryViewSet, basename="category-api")
 
-urlpatterns = router.urls
+
+urlpatterns = [
+    path("", views.CategoryListView.as_view(), name="category-list"),
+    path("new/", views.CategoryCreateView.as_view(), name="category-create"),
+    path("<slug:slug>/", views.CategoryDetailView.as_view(), name="category-detail"),
+    path(
+        "<slug:slug>/edit/", views.CategoryUpdateView.as_view(), name="category-update"
+    ),
+    path(
+        "<slug:slug>/delete/",
+        views.CategoryDeleteView.as_view(),
+        name="category-delete",
+    ),
+    # path("api/", include(api_router.urls)),
+]

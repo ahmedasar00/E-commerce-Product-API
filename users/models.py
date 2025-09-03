@@ -100,7 +100,9 @@ class Address(models.Model):
     Stores shipping addresses for users. Each user can have multiple addresses.
     """
 
-    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="addresses")
+    user = models.ForeignKey(
+        Users, on_delete=models.CASCADE, related_name="address_set"
+    )
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)

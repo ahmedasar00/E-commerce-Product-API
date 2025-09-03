@@ -46,7 +46,7 @@ class OrderAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Prevent creating orders from the admin panel.
         # Order creation should go through the API to ensure all logic is applied.
-        return False
+        return True
 
 
 # We no longer need admin.site.register(OrderItem) because it's handled by the inline.
