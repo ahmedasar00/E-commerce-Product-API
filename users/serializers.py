@@ -4,7 +4,8 @@ from .models import Users, Address
 
 class AddressSerializer(serializers.ModelSerializer):
     """
-    Serializer for the Address mode
+    Serializer for the Address model.
+    Converts Address objects into JSON and vice versa.
     """
 
     class Meta:
@@ -18,25 +19,24 @@ class AddressSerializer(serializers.ModelSerializer):
             "postal_code",
             "is_default",
         )
-        # The user field is implicitly read-only because it's set by the view,
-        # not sent in the request body when creating an address.
+        # The "user" field is not exposed here.
+        # It will be set by the view, not directly by the client.
 
 
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for the custom Users model.
 
-    Handles creating, updating, and retrieving users with their associated addresses.
-    Password hashing is handled securely.
+    - Supports creating, updating, and retrieving users.
+    - Handles password hashing securely.
+    - Includes nested addresses (read-only).
     """
 
-    # Use the AddressSerializer to display a nested list of addresses.
-    # This is read-only because addresses should be managed via their own endpoint.
+    # Nested serializer for related addresses (read-only)
     addresses = AddressSerializer(many=True, read_only=True)
 
     class Meta:
         model = Users
-        # Define the fields to be included in the API representation.
         fields = (
             "id",
             "username",
@@ -46,23 +46,21 @@ class UserSerializer(serializers.ModelSerializer):
             "role",
             "phone",
             "profile_image",
-            "addresses",  # The nested addresses will appear here
-            "password",  # Include password for creation/update
+            "addresses",  # Nested addresses appear here
+            "password",  # For create/update only (write-only)
         )
 
-        # Ensure the password is write-only for security.
-        # It can be used to create/update a user but will not be sent in responses.
+        # Password can be written but never returned in API responses
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
         """
-        Create and return a new user with a properly hashed password.
+        Create a new user with a hashed password.
         """
         user = Users.objects.create_user(
             username=validated_data["username"],
             email=validated_data["email"],
             password=validated_data["password"],
-            # You can add other fields from validated_data here as well
             name=validated_data.get("name", ""),
             role=validated_data.get("role", Users.Roles.CUSTOMER),
         )
@@ -70,15 +68,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing user instance.
-
-        Handles password updates securely by using set_password if a new
-        password is provided.
+        Update an existing user.
+        If a new password is provided, hash it before saving.
         """
-        # Remove password from the data if it exists and handle it separately.
-        password = validated_data.pop("password", None)
-
-        # Update the rest of the fields as usual.
+        password = validated_data.pop("password", None)  # Handle password separately
         instance = super().update(instance, validated_data)
 
         if password:
