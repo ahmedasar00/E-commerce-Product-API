@@ -1,3 +1,6 @@
+from users.models import Address
+
+
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.http import HttpResponseForbidden
@@ -10,6 +13,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Order, OrderItem
+
+# from users.models import Address
 from .serializers import OrderSerializer, OrderCreateSerializer
 from .permissions import IsOwnerOrAdmin
 from products.models import Product
@@ -20,45 +25,21 @@ from products.models import Product
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    """
-    A ViewSet for viewing and creating orders via the API.
-    """
-
-    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
-
-    def get_serializer_class(self):
-        """
-        Return the appropriate serializer class based on the action.
-        - OrderCreateSerializer for the 'create' action.
-        - OrderSerializer for all other actions.
-        """
-        if self.action == "create":
-            return OrderCreateSerializer
-        return OrderSerializer
-
-    def get_queryset(self):
-        """
-        This view should return a list of all orders for the currently
-        authenticated user. Admins can see all orders in the system.
-        """
-        user = self.request.user
-        if user.is_staff:
-            return Order.objects.all().prefetch_related("items", "items__product")
-        return Order.objects.filter(user=user).prefetch_related(
-            "items", "items__product"
-        )
+    ...
 
     def perform_create(self, serializer):
-        """
-        Custom logic for creating an order.
-        This method calculates the total_amount and creates related OrderItem objects
-        within a database transaction to ensure data integrity.
-        """
         user = self.request.user
         validated_data = serializer.validated_data
 
         items_data = validated_data.pop("items")
         address_id = validated_data.pop("address_id")
+
+        try:
+            address = Address.objects.get(id=address_id, user=user)
+        except Address.DoesNotExist:
+            raise serializers.ValidationError(
+                {"address_id": "This address does not exist or does not belong to you."}
+            )
 
         with transaction.atomic():
             total_amount = 0
@@ -86,12 +67,14 @@ class OrderViewSet(viewsets.ModelViewSet):
                     )
                 except Product.DoesNotExist:
                     raise serializers.ValidationError(
-                        f"Product with id {item_data['product_id']} does not exist."
+                        {
+                            "product_id": f"Product with id {item_data['product_id']} does not exist."
+                        }
                     )
 
             order = Order.objects.create(
                 user=user,
-                address_id=address_id,
+                address=address,  #
                 total_amount=total_amount,
                 **validated_data,
             )

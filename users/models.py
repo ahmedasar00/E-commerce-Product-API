@@ -5,7 +5,6 @@ from django.contrib.auth.models import (
     Permission,
 )  # Import Group and Permission
 from django.utils.text import slugify
-from rest_framework.authtoken.models import Token
 
 
 class Users(AbstractUser):
@@ -129,10 +128,3 @@ class Address(models.Model):
         Returns a full string representation of the address for display.
         """
         return f"{self.street}, {self.city}, {self.country} - ({self.user.username})"
-
-
-class TokenProxy(Token):
-    class Meta:
-        proxy = True
-        verbose_name = "User Token"
-        verbose_name_plural = "User Tokens"

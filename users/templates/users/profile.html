@@ -1,25 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{{ user.username }}'s Profile</title>
-  </head>
-  <body>
-    <h1>Welcome, {{ user.name|default:user.username }}!</h1>
+{% extends 'base.html' %}
 
-    <h2>Your Profile Information:</h2>
-    <ul>
-      <li><strong>Username:</strong> {{ user.username }}</li>
-      <li><strong>Email:</strong> {{ user.email }}</li>
-      <li><strong>Full Name:</strong> {{ user.name }}</li>
-      <li>
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-header text-center bg-primary text-white">
+    <h3>User Profile</h3>
+  </div>
+  <div class="card-body">
+    <h4 class="card-title mb-4">Welcome, {{ user.name|default:user.username }}!</h4>
+
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <strong>Username:</strong> {{ user.username }}
+      </li>
+      <li class="list-group-item">
+        <strong>Email:</strong> {{ user.email }}
+      </li>
+      <li class="list-group-item">
+        <strong>Full Name:</strong> {{ user.name|default:"Not provided" }}
+      </li>
+      <li class="list-group-item">
         <strong>Phone Number:</strong> {{ user.phone|default:"Not provided" }}
       </li>
-      <li><strong>Role:</strong> {{ user.role }}</li>
+      <li class="list-group-item">
+        <strong>Account Type:</strong> <span class="badge bg-success">{{ user.get_role_display }}</span>
+      </li>
     </ul>
 
-    <hr />
+    <hr>
 
-    <a href="{% url 'logout' %}">Logout</a>
-  </body>
-</html>
+    <div class="text-center">
+      <a href="{% url 'address_list' %}" class="btn btn-secondary me-2">Manage My Addresses</a>
+      <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

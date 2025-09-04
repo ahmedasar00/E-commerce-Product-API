@@ -3,6 +3,13 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+
+
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Address
+from .forms import AddressForm
 
 
 def register_view(request):
@@ -57,6 +64,57 @@ def logout_view(request):
     """
     logout(request)
     return redirect("login")
+
+
+class AddressListView(LoginRequiredMixin, ListView):
+    model = Address
+    template_name = "users/address_list.html"
+    context_object_name = "addresses"
+
+    def get_queryset(self):
+        """
+        Ensure users can only see their own addresses.
+        """
+        return Address.objects.filter(user=self.request.user)
+
+
+class AddressCreateView(LoginRequiredMixin, CreateView):
+    model = Address
+    form_class = AddressForm
+    template_name = "users/address_form.html"
+    success_url = reverse_lazy("address_list")
+
+    def form_valid(self, form):
+        """
+        Assign the current user to the new address before saving.
+        """
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class AddressUpdateView(LoginRequiredMixin, UpdateView):
+    model = Address
+    form_class = AddressForm
+    template_name = "users/address_form.html"
+    success_url = reverse_lazy("address_list")
+
+    def get_queryset(self):
+        """
+        Ensure users can only edit their own addresses.
+        """
+        return Address.objects.filter(user=self.request.user)
+
+
+class AddressDeleteView(LoginRequiredMixin, DeleteView):
+    model = Address
+    template_name = "users/address_confirm_delete.html"
+    success_url = reverse_lazy("address_list")
+
+    def get_queryset(self):
+        """
+        Ensure users can only delete their own addresses.
+        """
+        return Address.objects.filter(user=self.request.user)
 
 
 # --- Static Pages (simple render only) ---
