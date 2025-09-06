@@ -7,16 +7,9 @@
     <div class="row">
       <div class="col-md-5">
         {% if product.image %}
-        <img
-          src="{{ product.image.url }}"
-          alt="{{ product.name }}"
-          class="img-fluid rounded"
-        />
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" />
         {% else %}
-        <div
-          class="d-flex justify-content-center align-items-center bg-light rounded"
-          style="height: 300px"
-        >
+        <div class="d-flex justify-content-center align-items-center bg-light rounded" style="height: 300px">
           <i class="fas fa-image fa-5x text-muted"></i>
         </div>
         {% endif %}
@@ -26,9 +19,7 @@
         <p class="text-muted">In {{ product.category.name }}</p>
 
         {% if product.is_available %}
-        <span class="badge bg-success"
-          >In Stock ({{ product.stack }} available)</span
-        >
+        <span class="badge bg-success">In Stock ({{ product.stack }} available)</span>
         {% else %}
         <span class="badge bg-danger">Out of Stock</span>
         {% endif %}
@@ -38,20 +29,14 @@
         <p class="lead">{{ product.description|linebreaksbr }}</p>
 
         <div class="mt-4">
-          <a href="{% url 'product-list' %}" class="btn btn-secondary">
+          <a href="{% url 'product_list' %}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Back to List
           </a>
-          <a
-            href="{% url 'product-update' product.pk %}"
-            class="btn btn-primary"
-          >
+          <a href="{% url 'product-update' product.pk %}" class="btn btn-primary">
             <i class="fas fa-edit me-2"></i>Edit
           </a>
-          <a
-            href="{% url 'product-delete' product.pk %}"
-            class="btn btn-danger"
-          >
-            <i class="fas fa-trash-alt me-2"></i>Delete
+
+          <i class="fas fa-trash-alt me-2"></i>Delete
           </a>
         </div>
       </div>

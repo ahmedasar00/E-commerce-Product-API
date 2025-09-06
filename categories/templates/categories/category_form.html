@@ -1,9 +1,8 @@
-{% comment %} {% extends "categories/base.html" %} {% endcomment %} {% block
-page_title %} {% if form.instance.pk %} Edit Category:
+{% comment %} {% extends "categories/base.html" %} {% endcomment %} {% if form.instance.pk %} Edit Category:
 <span class="text-primary">{{ form.instance.name }}</span>
 {% else %}
 <h2>Create a New Category</h2>
-{% endif %} {% endblock page_title %}
+{% endif %}
 <div class="row justify-content-center">
   <div class="col-md-8">
     <div class="card shadow-sm">
@@ -18,9 +17,7 @@ page_title %} {% if form.instance.pk %} Edit Category:
           {% endif %}
 
           <div class="mb-3">
-            <label for="{{ form.name.id_for_label }}" class="form-label"
-              >{{ form.name.label }}</label
-            >
+            <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
             {{ form.name }} {% if form.name.errors %}
             <div class="invalid-feedback d-block">
               {{ form.name.errors.as_text }}
@@ -29,9 +26,7 @@ page_title %} {% if form.instance.pk %} Edit Category:
           </div>
 
           <div class="mb-3">
-            <label for="{{ form.description.id_for_label }}" class="form-label"
-              >{{ form.description.label }}</label
-            >
+            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
             {{ form.description }} {% if form.description.errors %}
             <div class="invalid-feedback d-block">
               {{ form.description.errors.as_text }}
@@ -40,21 +35,15 @@ page_title %} {% if form.instance.pk %} Edit Category:
           </div>
 
           <div class="mb-4">
-            <label for="{{ form.image.id_for_label }}" class="form-label"
-              >{{ form.image.label }}</label
-            >
+            <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
             {{ form.image }} {% if form.image.errors %}
             <div class="invalid-feedback d-block">
               {{ form.image.errors.as_text }}
             </div>
             {% endif %} {% if form.instance.image %}
             <div class="mt-2">
-              <small
-                >Current Image:
-                <a href="{{ form.instance.image.url }}" target="_blank"
-                  >{{ form.instance.image.name }}</a
-                ></small
-              >
+              <small>Current Image:
+                <a href="{{ form.instance.image.url }}" target="_blank">{{ form.instance.image.name }}</a></small>
             </div>
             {% endif %}
           </div>

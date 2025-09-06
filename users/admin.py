@@ -70,3 +70,5 @@ class AddressAdmin(admin.ModelAdmin):
     # Add a search bar to search for addresses.
     # The '__' syntax allows searching through related models.
     search_fields = ("user__username", "street", "city", "postal_code")
+
+
