@@ -2,11 +2,12 @@ from users.models import Address
 
 
 from django.db import transaction
-from django.urls import reverse_lazy, reverse  # Import 'reverse' for dynamic URLs
+from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.shortcuts import redirect
 
 from rest_framework import viewsets, status, serializers
 from rest_framework.permissions import IsAuthenticated
@@ -14,18 +15,16 @@ from rest_framework.response import Response
 
 from .models import Order, OrderItem
 
-# from users.models import Address
 from .serializers import OrderSerializer, OrderCreateSerializer
 from .permissions import IsOwnerOrAdmin
 from products.models import Product
 
+
 # -----------------------------------------------------------------------------
 # API Views (using Django REST Framework)
 # -----------------------------------------------------------------------------
-
-
 class OrderViewSet(viewsets.ModelViewSet):
-    # ... existing code ...
+    # ... (Code remains the same) ...
     def get_queryset(self):
         """
         This view should return a list of all the orders
@@ -98,7 +97,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             order = Order.objects.create(
                 user=user,
-                address=address,  #
+                address=address,
                 total_amount=total_amount,
                 **validated_data,
             )
@@ -117,73 +116,54 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 class OrderListView(LoginRequiredMixin, ListView):
-    """
-    View to display a list of orders for the currently logged-in user.
-    Renders an HTML template.
-    """
-
     model = Order
     template_name = "orders/order_list.html"
     context_object_name = "orders"
     paginate_by = 10
 
     def get_queryset(self):
-        """
-        Overrides the default queryset to ensure that users can only see
-        their own orders, ordered by the most recent.
-        """
         return Order.objects.filter(user=self.request.user).order_by("-created_at")
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
-    """
-    View to display the details of a specific order.
-    Renders an HTML template.
-    """
-
     model = Order
     template_name = "orders/order_detail.html"
     context_object_name = "order"
 
     def get_queryset(self):
-        """
-        Overrides the default queryset to ensure that a user can only view
-        their own orders, preventing access to others' orders via URL guessing.
-        """
         return Order.objects.filter(user=self.request.user)
 
 
 class OrderCreateView(LoginRequiredMixin, CreateView):
-    """
-    View to create a new order. After creation, it redirects to the payment page.
-    """
-
     model = Order
     template_name = "orders/order_form.html"
     fields = ["address"]
-    # We no longer need a static success_url because we override get_success_url.
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        This method runs before any other in the view. It checks if the user
+        has any addresses. If not, it redirects them to the add-address page.
+        """
+        if not request.user.address_set.exists():
+            # Redirect to the add address page, passing a 'next' parameter
+            # to return the user here after successfully adding an address.
+            return redirect(reverse("address_add") + "?next=" + reverse("order_create"))
+        # If the user has addresses, proceed as normal.
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form(self, form_class=None):
-        """Ensures the address dropdown only shows the current user's addresses."""
         form = super().get_form(form_class)
         form.fields["address"].queryset = self.request.user.address_set.all()
         return form
 
     def form_valid(self, form):
-        """Sets the user and updates order status before saving."""
         form.instance.user = self.request.user
-        # NOTE: In a real app, this should be calculated from a shopping cart.
         form.instance.total_amount = 0
-        # === CHANGE 1: Set status to trigger payment flow ===
         form.instance.status = "Pending Payment"
         return super().form_valid(form)
 
     def get_success_url(self):
-        """
-        === CHANGE 2: Redirect to the payment page for the new order ===
-        This method is called after the form is successfully validated and the order is saved.
-        """
-        # 'self.object' is the Order instance that was just created.
+        # Redirect to the payment page for the newly created order.
         return reverse("create_payment", kwargs={"order_id": self.object.pk})
 
     def get_context_data(self, **kwargs):
@@ -193,11 +173,6 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
 
 
 class OrderCancelView(LoginRequiredMixin, UpdateView):
-    """
-    View for a user to cancel their own order.
-    This is an UpdateView that only allows changing the status to 'Cancelled'.
-    """
-
     model = Order
     template_name = "orders/order_confirm_cancel.html"
     fields = []
@@ -208,9 +183,7 @@ class OrderCancelView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         order = self.get_object()
-        if (
-            order.status != "Pending"
-        ):  # You might want to allow cancellation if it's 'Pending Payment' too
+        if order.status not in ["Pending", "Pending Payment"]:
             return HttpResponseForbidden("This order cannot be cancelled.")
 
         order.status = "Cancelled"
@@ -219,12 +192,6 @@ class OrderCancelView(LoginRequiredMixin, UpdateView):
 
 
 class OrderDeleteView(LoginRequiredMixin, DeleteView):
-    """
-    View for a user to delete their own order.
-    WARNING: In a real application, you should almost NEVER delete orders.
-    Prefer changing the status to 'Cancelled' or 'Archived'.
-    """
-
     model = Order
     template_name = "orders/order_confirm_delete.html"
     success_url = reverse_lazy("order_list")

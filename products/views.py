@@ -1,3 +1,4 @@
+from django.db.models import Q  # <-- تم إضافة هذا السطر للبحث المتقدم
 from rest_framework import viewsets, permissions
 from .models import Product
 from .serializers import ProductSerializer
@@ -29,12 +30,36 @@ class ProductViewSet(viewsets.ModelViewSet):
 class ProductListView(ListView):
     """
     Display a list of all products (HTML page).
+    Now includes search functionality.
     """
 
     model = Product
     template_name = "products/product_list.html"
     context_object_name = "products"
-    paginate_by = 10  # Show 10 products per page
+    paginate_by = 8  # تم تقليل العدد ليتناسب مع شكل العرض
+
+    # --- START: Search Logic Addition ---
+    def get_queryset(self):
+        """
+        This method is overridden to add search functionality.
+        It filters products based on the 'q' GET parameter from the search bar.
+        """
+        queryset = super().get_queryset().order_by("-created_at")
+
+        # Get the search query from the URL (?q=...)
+        query = self.request.GET.get("q")
+
+        if query:
+            # If a query exists, filter the queryset.
+            # The Q object allows for a complex query (searching in name OR description).
+            # 'icontains' makes the search case-insensitive.
+            queryset = queryset.filter(
+                Q(name__icontains=query) | Q(description__icontains=query)
+            ).distinct()
+
+        return queryset
+
+    # --- END: Search Logic Addition ---
 
 
 class ProductDetailView(DetailView):
