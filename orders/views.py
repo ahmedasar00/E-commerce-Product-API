@@ -2,7 +2,7 @@ from users.models import Address
 
 
 from django.db import transaction
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse  # Import 'reverse' for dynamic URLs
 from django.http import HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
@@ -25,7 +25,31 @@ from products.models import Product
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    ...
+    # ... existing code ...
+    def get_queryset(self):
+        """
+        This view should return a list of all the orders
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        if user.is_staff:  # Admin can see all orders
+            return Order.objects.all()
+        return Order.objects.filter(user=user)
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return OrderCreateSerializer
+        return OrderSerializer
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ["list", "retrieve", "create"]:
+            permission_classes = [IsAuthenticated]
+        else:  # For update, partial_update, destroy
+            permission_classes = [IsOwnerOrAdmin]
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -131,27 +155,36 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
 class OrderCreateView(LoginRequiredMixin, CreateView):
     """
-    View to create a new order.
-    NOTE: This is a highly simplified example for educational purposes.
-    A real e-commerce 'create order' process is complex and should be handled
-    by a checkout flow, similar to the logic in our API's perform_create.
+    View to create a new order. After creation, it redirects to the payment page.
     """
 
     model = Order
     template_name = "orders/order_form.html"
     fields = ["address"]
-    success_url = reverse_lazy("order_list")
+    # We no longer need a static success_url because we override get_success_url.
 
     def get_form(self, form_class=None):
+        """Ensures the address dropdown only shows the current user's addresses."""
         form = super().get_form(form_class)
         form.fields["address"].queryset = self.request.user.address_set.all()
         return form
 
     def form_valid(self, form):
+        """Sets the user and updates order status before saving."""
         form.instance.user = self.request.user
+        # NOTE: In a real app, this should be calculated from a shopping cart.
         form.instance.total_amount = 0
-        form.instance.status = "Pending"
+        # === CHANGE 1: Set status to trigger payment flow ===
+        form.instance.status = "Pending Payment"
         return super().form_valid(form)
+
+    def get_success_url(self):
+        """
+        === CHANGE 2: Redirect to the payment page for the new order ===
+        This method is called after the form is successfully validated and the order is saved.
+        """
+        # 'self.object' is the Order instance that was just created.
+        return reverse("create_payment", kwargs={"order_id": self.object.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -175,7 +208,9 @@ class OrderCancelView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         order = self.get_object()
-        if order.status != "Pending":
+        if (
+            order.status != "Pending"
+        ):  # You might want to allow cancellation if it's 'Pending Payment' too
             return HttpResponseForbidden("This order cannot be cancelled.")
 
         order.status = "Cancelled"

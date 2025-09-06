@@ -1,4 +1,8 @@
+{% extends "orders/base.html" %}
+
 {% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
 <h1 class="mb-4">Details for Order #{{ order.id }}</h1>
 
 <div class="card mb-4">
@@ -8,7 +12,7 @@
     <p><strong>Date Placed:</strong> {{ order.created_at|date:"F d, Y, P" }}</p>
     <p>
       <strong>Status:</strong>
-      <span class="badge bg-success fs-6">{{ order.status }}</span>
+      <span class="badge bg-primary fs-6">{{ order.status }}</span>
     </p>
     <p><strong>Shipping Address:</strong> {{ order.address }}</p>
     <h5 class="mt-3">
@@ -16,6 +20,33 @@
     </h5>
   </div>
 </div>
+
+<!-- === START: Payment Section === -->
+{% if order.status == 'Pending Payment' %}
+<div class="card mb-4 shadow-sm">
+  <div class="card-header bg-light">
+    <h5 class="mb-0">Complete Your Order</h5>
+  </div>
+  <div class="card-body text-center">
+    <p class="lead">This order is awaiting payment.</p>
+    <a href="{% url 'create_payment' order.id %}" class="btn btn-success btn-lg">
+      <i class="fas fa-credit-card me-2"></i>Proceed to Payment
+    </a>
+  </div>
+</div>
+{% elif order.payment %}
+<div class="card mb-4">
+  <div class="card-header">Payment Details</div>
+  <div class="card-body">
+    <p><strong>Payment Status:</strong> <span class="badge bg-success">{{ order.payment.status }}</span></p>
+    <p><strong>Transaction ID:</strong> {{ order.payment.transaction_id }}</p>
+    <p><strong>Payment Method:</strong> Credit Card</p>
+    <p><strong>Date:</strong> {{ order.payment.created_at|date:"F d, Y, P" }}</p>
+  </div>
+</div>
+{% endif %}
+<!-- === END: Payment Section === -->
+
 
 <h3 class="mt-5 mb-3">Items in this Order</h3>
 <div class="table-responsive">
@@ -35,8 +66,8 @@
         <td>{{ item.quantity }}</td>
         <td>${{ item.price_at_order_time|floatformat:2 }}</td>
         <td>
-          ${% widthratio item.price_at_order_time 1 item.quantity as subtotal
-          %}{{ subtotal|floatformat:2 }}
+          {% widthratio item.price_at_order_time 1 item.quantity as subtotal %}
+          ${{ subtotal|floatformat:2 }}
         </td>
       </tr>
       {% endfor %}
@@ -44,6 +75,5 @@
   </table>
 </div>
 
-<a href="{% url 'order_list' %}" class="btn btn-primary mt-4"
-  >← Back to All Orders</a
->
+<a href="{% url 'order_list' %}" class="btn btn-primary mt-4">← Back to All Orders</a>
+{% endblock %}

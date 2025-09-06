@@ -1,14 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Create New Payment</title>
-  </head>
-  <body>
-    <h1>Add a New Payment</h1>
-    <form method="post">
-      {% csrf_token %} {{ form.as_p }}
-      <button type="submit">Save Payment</button>
-    </form>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Complete Payment{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h2 class="h4 mb-0">Complete Your Payment</h2>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Order #{{ order.id }}</h5>
+        <p class="card-text">Total Amount: <strong>${{ order.total_amount|floatformat:2 }}</strong></p>
+        <hr>
+
+        <!-- This is a dummy form. In a real application, you would integrate a payment gateway like Stripe or PayPal. -->
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label for="card_number" class="form-label">Card Number</label>
+            <input type="text" class="form-control" id="card_number" placeholder="XXXX XXXX XXXX XXXX" required>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="expiry_date" class="form-label">Expiry Date</label>
+              <input type="text" class="form-control" id="expiry_date" placeholder="MM/YY" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="cvv" class="form-label">CVV</label>
+              <input type="text" class="form-control" id="cvv" placeholder="123" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="name_on_card" class="form-label">Name on Card</label>
+            <input type="text" class="form-control" id="name_on_card" placeholder="John Doe" required>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success btn-lg">Pay Now</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

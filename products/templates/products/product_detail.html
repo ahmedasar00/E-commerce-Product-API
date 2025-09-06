@@ -1,5 +1,9 @@
-{% comment %} {% extends "products/base.html" %} {% endcomment %}
-<div class="card shadow-sm">
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm mb-5">
   <div class="card-header">
     <h1 class="h3 mb-0">{{ product.name }}</h1>
   </div>
@@ -19,7 +23,7 @@
         <p class="text-muted">In {{ product.category.name }}</p>
 
         {% if product.is_available %}
-        <span class="badge bg-success">In Stock ({{ product.stack }} available)</span>
+        <span class="badge bg-success">In Stock ({{ product.stock }} available)</span>
         {% else %}
         <span class="badge bg-danger">Out of Stock</span>
         {% endif %}
@@ -32,14 +36,44 @@
           <a href="{% url 'product_list' %}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Back to List
           </a>
-          <a href="{% url 'product-update' product.pk %}" class="btn btn-primary">
+          <a href="{% url 'product-update' product.pk %}" class="btn btn-info">
             <i class="fas fa-edit me-2"></i>Edit
           </a>
-
-          <i class="fas fa-trash-alt me-2"></i>Delete
+          <a href="{% url 'product-delete' product.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash-alt me-2"></i>Delete
+          </a>
+          <a href="{% url 'order_create' %}" class="btn btn-primary w-100 mt-3">
+            <i class="fas fa-shopping-cart me-2"></i>Buy Now
           </a>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- === START: Reviews Section === -->
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="h4 mb-0">Customer Reviews</h2>
+    <a href="{% url 'review-create' %}" class="btn btn-success">
+      <i class="fas fa-plus me-2"></i>Add Your Review
+    </a>
+  </div>
+  <div class="card-body">
+    {% for review in product.review_set.all %}
+    <div class="border-bottom pb-3 mb-3">
+      <strong>{{ review.user.username }}</strong>
+      <!-- You can add a star rating here later -->
+      <p class="mt-2 mb-0">{{ review.comment }}</p>
+      <small class="text-muted">Posted on {{ review.created_at|date:"F j, Y" }}</small>
+    </div>
+    {% empty %}
+    <div class="alert alert-info" role="alert">
+      There are no reviews for this product yet. Be the first to add one!
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<!-- === END: Reviews Section === -->
+
+{% endblock %}

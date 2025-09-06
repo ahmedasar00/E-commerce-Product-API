@@ -74,26 +74,36 @@ The database is designed to support the complex relationships in an e-commerce p
 
 Here is a summary of the available API endpoints based on the current project structure.
 
-| Method         | Endpoint                   | Description                         | Auth Required |
-| :------------- | :------------------------- | :---------------------------------- | :------------ |
-| **Products**   |                            |                                     |               |
-| `GET`          | `/products/api/`           | Get a list of all products.         | No            |
-| `POST`         | `/products/api/`           | Create a new product.               | Yes (Seller)  |
-| `GET`          | `/products/api/{id}/`      | Get details of a specific product.  | No            |
-| `PUT`/`PATCH`  | `/products/api/{id}/`      | Update a product.                   | Yes (Seller)  |
-| `DELETE`       | `/products/api/{id}/`      | Delete a product.                   | Yes (Seller)  |
-| **Categories** |                            |                                     |               |
-| `GET`          | `/api/v1/categories/`      | Get a list of all categories.       | No            |
-| `POST`         | `/api/v1/categories/`      | Create a new category.              | Yes (Admin)   |
-| `GET`          | `/api/v1/categories/{id}/` | Get details of a specific category. | No            |
-| `PUT`/`PATCH`  | `/api/v1/categories/{id}/` | Update a category.                  | Yes (Admin)   |
-| `DELETE`       | `/api/v1/categories/{id}/` | Delete a category.                  | Yes (Admin)   |
-| **Orders**     |                            |                                     |               |
-| `GET`          | `/api/orders/`             | List all orders for the user.       | Yes           |
-| `POST`         | `/api/orders/`             | Create a new order.                 | Yes           |
-| `GET`          | `/api/orders/{id}/`        | Get details of a specific order.    | Yes           |
+| Method         | Endpoint                     | Description                         | Auth Required  |
+| :------------- | :--------------------------- | :---------------------------------- | :------------- |
+| **Products**   |                              |                                     |                |
+| `GET`          | `/products/api/`             | Get a list of all products.         | No             |
+| `POST`         | `/products/api/`             | Create a new product.               | Yes (Seller)   |
+| `GET`          | `/products/api/{id}/`        | Get details of a specific product.  | No             |
+| `PUT / PATCH`  | `/products/api/{id}/`        | Update a product.                   | Yes (Seller)   |
+| `DELETE`       | `/products/api/{id}/`        | Delete a product.                   | Yes (Seller)   |
+| **Categories** |                              |                                     |                |
+| `GET`          | `/categories/api/`           | Get a list of all categories.       | No             |
+| `POST`         | `/categories/api/`           | Create a new category.              | Yes (Customer) |
+| `GET`          | `/categories/api/{id}/`      | Get details of a specific category. | No             |
+| `PUT / PATCH`  | `/categories/api/{id}/`      | Update a category.                  | Yes (Customer) |
+| `DELETE`       | `/categories/api/{id}/`      | Delete a category.                  | Yes (Customer) |
+| **Reviews**    |                              |                                     |                |
+| `GET`          | `/reviews/api/reviews/`      | Get a list of all reviews.          | No             |
+| `POST`         | `/reviews/api/reviews/`      | Create a new review.                | Yes (User)     |
+| `GET`          | `/reviews/api/reviews/{id}/` | Get details of a specific review.   | No             |
+| `PUT / PATCH`  | `/reviews/api/reviews/{id}/` | Update a review.                    | Yes (User)     |
+| `DELETE`       | `/reviews/api/reviews/{id}/` | Delete a review.                    | Yes (User)     |
 
 _Note: The project also includes several template-based URLs for rendering HTML pages (e.g., `/register/`, `/login/`, `/products/`, `/categories/`, `/my-orders/`). The table above focuses exclusively on the RESTful API endpoints that handle JSON data._
+
+---
+
+### ⚠️ Important Notes & Fixes
+
+- **Categories**: The API path is `/categories/api/`. To activate it, you must uncomment the line `path("api/", include(api_router.urls)),` in your `categories/urls.py` file.
+- **Orders**: The Orders API endpoints have been removed from this table as they do not exist in your provided `orders/urls.py` file. That file only contains template-based views.
+- **Reviews**: The Reviews API endpoints have been added as they exist in your project structure but were missing from the original table. The correct path is `/reviews/api/reviews/`.
 
 ---
 
