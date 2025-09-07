@@ -2,33 +2,31 @@
 
 {% block title %}Confirm Deletion{% endblock %}
 
-{% block content %}
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow-sm border-danger">
-        <div class="card-header bg-danger text-white">
-          <h5 class="mb-0">
-            Delete Category
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="text-center mb-4">
-            <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
-          </div>
-          <p class="lead text-center">
-            Are you sure you want to delete the category "<strong>{{ category.name }}</strong>"?
-          </p>
-          <p class="text-center text-muted">This action cannot be undone.</p>
-          <hr />
-          <form method="post" class="text-center">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger mx-2">
-              Yes, Delete
-            </button>
-          </form>
+{% block page_title %}Delete Category{% endblock %}
 
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-sm border-danger">
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Confirm Deletion</h5>
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-4">
+          <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
         </div>
+        <p class="lead text-center">
+          Are you sure you want to delete "<strong>{{ category.name }}</strong>"?
+        </p>
+        <p class="text-center text-muted">This action cannot be undone.</p>
+        <hr />
+        <form method="post" class="d-flex justify-content-center">
+          {% csrf_token %}
+
+          <a href="{% url 'category-list' %}" class="btn btn-secondary me-2">Cancel</a>
+
+          <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        </form>
       </div>
     </div>
   </div>
