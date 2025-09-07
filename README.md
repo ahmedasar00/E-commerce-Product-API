@@ -1,5 +1,15 @@
 # Django E-commerce API
 
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
+![Django REST Framework](https://img.shields.io/badge/Django%20REST-A30000?style=for-the-badge&logo=django&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![WhiteNoise](https://img.shields.io/badge/WhiteNoise-FFFFFF?style=for-the-badge&logo=python&logoColor=black)
+
+</div>
+
 ## 📖 Table of Contents
 
 - [About the Project](#-about-the-project)
@@ -44,6 +54,7 @@ The architecture is designed to be scalable, secure, and maintainable, following
 - **API:** Django REST Framework (DRF)
 - **Authentication:** DRF Token Authentication (built-in).
 - **Database:** PostgreSQL / MySQL / SQLite 3 (Configurable)
+- **Static Files:** WhiteNoise
 
 ---
 
@@ -74,30 +85,40 @@ The database is designed to support the complex relationships in an e-commerce p
 
 Here is a summary of the available API endpoints based on the current project structure.
 
-| Method         | Endpoint                     | Description                         | Auth Required  |
-| :------------- | :--------------------------- | :---------------------------------- | :------------- |
-| **Products**   |                              |                                     |                |
-| `GET`          | `/products/api/`             | Get a list of all products.         | No             |
-| `POST`         | `/products/api/`             | Create a new product.               | Yes (Seller)   |
-| `GET`          | `/products/api/{id}/`        | Get details of a specific product.  | No             |
-| `PUT / PATCH`  | `/products/api/{id}/`        | Update a product.                   | Yes (Seller)   |
-| `DELETE`       | `/products/api/{id}/`        | Delete a product.                   | Yes (Seller)   |
-| **Categories** |                              |                                     |                |
-| `GET`          | `/categories/api/`           | Get a list of all categories.       | No             |
-| `POST`         | `/categories/api/`           | Create a new category.              | Yes (Customer) |
-| `GET`          | `/categories/api/{id}/`      | Get details of a specific category. | No             |
-| `PUT / PATCH`  | `/categories/api/{id}/`      | Update a category.                  | Yes (Customer) |
-| `DELETE`       | `/categories/api/{id}/`      | Delete a category.                  | Yes (Customer) |
-| **Reviews**    |                              |                                     |                |
-| `GET`          | `/reviews/api/reviews/`      | Get a list of all reviews.          | No             |
-| `POST`         | `/reviews/api/reviews/`      | Create a new review.                | Yes (User)     |
-| `GET`          | `/reviews/api/reviews/{id}/` | Get details of a specific review.   | No             |
-| `PUT / PATCH`  | `/reviews/api/reviews/{id}/` | Update a review.                    | Yes (User)     |
-| `DELETE`       | `/reviews/api/reviews/{id}/` | Delete a review.                    | Yes (User)     |
+| Method         | Endpoint                  | Description                         | Auth Required      |
+| :------------- | :------------------------ | :---------------------------------- | :----------------- |
+| **Products**   |                           |                                     |                    |
+| `GET`          | `/products/api/`          | Get a list of all products.         | No                 |
+| `POST`         | `/products/api/`          | Create a new product.               | Yes (Seller)       |
+| `GET`          | `/products/api/{slug}/`   | Get details of a specific product.  | No                 |
+| `PUT / PATCH`  | `/products/api/{slug}/`   | Update a product.                   | Yes (Seller)       |
+| `DELETE`       | `/products/api/{slug}/`   | Delete a product.                   | Yes (Seller)       |
+| **Categories** |                           |                                     |                    |
+| `GET`          | `/categories/api/`        | Get a list of all categories.       | No                 |
+| `POST`         | `/categories/api/`        | Create a new category.              | Yes (Admin/Seller) |
+| `GET`          | `/categories/api/{slug}/` | Get details of a specific category. | No                 |
+| `PUT / PATCH`  | `/categories/api/{slug}/` | Update a category.                  | Yes (Admin/Seller) |
+| `DELETE`       | `/categories/api/{slug}/` | Delete a category.                  | Yes (Admin/Seller) |
+| **Reviews**    |                           |                                     |                    |
+| `GET`          | `/reviews/api/`           | Get all reviews for a product.      | No                 |
+| `POST`         | `/reviews/api/`           | Create a new review.                | Yes (Customer)     |
+| `GET`          | `/reviews/api/{id}/`      | Get details of a specific review.   | No                 |
+| `PUT / PATCH`  | `/reviews/api/{id}/`      | Update a review.                    | Yes (Customer)     |
+| `DELETE`       | `/reviews/api/{id}/`      | Delete a review.                    | Yes (Customer)     |
+| **Orders**     |                           |                                     |                    |
+| `GET`          | `/orders/api/`            | Get a list of the user's orders.    | Yes (Customer)     |
+| `POST`         | `/orders/api/`            | Create a new order.                 | Yes (Customer)     |
+| `GET`          | `/orders/api/{id}/`       | Get details of a specific order.    | Yes (Customer)     |
+| `PUT / PATCH`  | `/orders/api/{id}/`       | Update a specific order.            | Yes (Customer)     |
+| `DELETE`       | `/orders/api/{id}/`       | Cancel/Delete an order.             | Yes (Customer)     |
 
 _Note: The project also includes several template-based URLs for rendering HTML pages (e.g., `/register/`, `/login/`, `/products/`, `/categories/`, `/my-orders/`). The table above focuses exclusively on the RESTful API endpoints that handle JSON data._
 
----
+curl -X DELETE http://127.0.0.1:8000/products/api/laptop-pro/ \
+-H "Authorization: Token YOUR_SELLER_AUTH_TOKEN"
+
+curl -X DELETE http://127.0.0.1:8000/categories/api/electronics/ \
+-H "Authorization: Token YOUR_ADMIN_AUTH_TOKEN"
 
 ### ⚠️ Important Notes & Fixes
 

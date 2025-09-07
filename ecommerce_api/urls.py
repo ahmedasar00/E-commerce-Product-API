@@ -18,8 +18,8 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-    # path("api/v1/categories/", include("categories.urls")),
-    # path("api/v1/reviews/", include("reviews.api_urls")),  # للـ API
+    # path("api/e1/categories/", include("categories.urls")),
+    # path("api/11/reviews/", include("reviews.api_urls")),  # للـ API
     # Route all API requests starting with 'api/' to the api_urls.py file
     # path("api/", include("orders.api_urls")),
     # Route all other requests to the standard urls.py file

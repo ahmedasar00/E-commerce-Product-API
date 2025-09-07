@@ -16,9 +16,9 @@ router.register(r"reviews", views.ReviewViewSet, basename="review")
 
 urlpatterns = [
     # API URLs
+    path("", views.ReviewListView.as_view(), name="review-list"),
     path("api/", include(router.urls)),
     # Template-based URLs
-    path("", views.ReviewListView.as_view(), name="review-list"),
     path("new/", views.ReviewCreateView.as_view(), name="review-create"),
     path("<int:pk>/edit/", views.ReviewUpdateView.as_view(), name="review-update"),
     path("<int:pk>/delete/", views.ReviewDeleteView.as_view(), name="review-delete"),
